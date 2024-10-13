@@ -56,6 +56,23 @@ int main(int argc, char *argv[]) {
   piper::PhonemeIdConfig idConfig;
   tashkeel::State tashkeelState;
 
+  // Check "licht" in German
+  phonemeConfig.voice = "de";
+  std::vector<std::vector<piper::Phoneme>> phonemes;
+
+  // Should be "lˈɪçt!" where "ç" is decomposed into two codepoints
+  piper::phonemize_eSpeak("licht!", phonemeConfig, phonemes);
+
+  // 0 = pad
+  // 1 = bos
+  // 2 = eos
+  // 4 = !
+  std::string idStr = idString(phonemes, idConfig);
+  if (idStr != "1 0 24 0 120 0 74 0 16 0 140 0 32 0 4 0 2 ") {
+    std::cerr << "licht: " << idStr << std::endl;
+    return 1;
+  }
+
   if (runConfig.phonemeType == eSpeakPhonemes) {
     // Need to initialize eSpeak
     if (!runConfig.eSpeakDataPath) {
